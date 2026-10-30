@@ -1,0 +1,75 @@
+{% extends "admin/base_site.html" %}
+{% load jazzmin %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block content_title %}Store overview{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">Home</a></li>
+  <li class="breadcrumb-item active">Dashboard</li>
+</ol>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; }
+  .metric-card { min-height: 112px; border-left-width: 4px !important; text-decoration: none !important; transition: transform .15s ease, box-shadow .15s ease; }
+  .metric-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .10) !important; }
+  .metric-label { display: block; margin-bottom: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .metric-value { display: block; font-size: 1.55rem; line-height: 1.2; }
+  .metric-note { display: block; margin-top: .45rem; font-size: .75rem; }
+  .dashboard-heading { margin: 1.75rem 0 .75rem; font-size: 1rem; font-weight: 600; }
+  @media (max-width: 575px) { .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .metric-value { font-size: 1.2rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+  {% if admin_dashboard_stats %}
+    <div class="metric-grid">
+      <a class="card metric-card border-primary shadow-sm" href="{% url 'admin:accounts_user_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Active customers</span><strong class="metric-value text-body">{{ admin_dashboard_stats.customers }}</strong><span class="metric-note text-muted">Customer accounts</span></div></a>
+      <a class="card metric-card border-primary shadow-sm" href="{% url 'admin:shop_product_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Active products</span><strong class="metric-value text-body">{{ admin_dashboard_stats.active_products }}</strong><span class="metric-note text-muted">Current catalogue</span></div></a>
+      <a class="card metric-card border-warning shadow-sm" href="{% url 'admin:shop_product_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Low stock</span><strong class="metric-value text-body">{{ admin_dashboard_stats.low_stock_products }}</strong><span class="metric-note text-muted">Five or fewer remaining</span></div></a>
+      <a class="card metric-card border-primary shadow-sm" href="{% url 'admin:orders_order_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Orders today</span><strong class="metric-value text-body">{{ admin_dashboard_stats.orders_today }}</strong><span class="metric-note text-muted">Placed today</span></div></a>
+      <a class="card metric-card border-warning shadow-sm" href="{% url 'admin:shop_contactinquiry_changelist' %}?is_handled__exact=0"><div class="card-body"><span class="metric-label text-muted">Open inquiries</span><strong class="metric-value text-body">{{ admin_dashboard_stats.open_inquiries }}</strong><span class="metric-note text-muted">Awaiting follow-up</span></div></a>
+    </div>
+
+    <h2 class="dashboard-heading">Order activity</h2>
+    <div class="metric-grid">
+      <a class="card metric-card border-warning shadow-sm" href="{% url 'admin:orders_order_changelist' %}?status__exact=PENDING"><div class="card-body"><span class="metric-label text-muted">Pending</span><strong class="metric-value text-body">{{ admin_dashboard_stats.pending_orders }}</strong></div></a>
+      <a class="card metric-card border-info shadow-sm" href="{% url 'admin:orders_order_changelist' %}?status__exact=PROCESSING"><div class="card-body"><span class="metric-label text-muted">Processing</span><strong class="metric-value text-body">{{ admin_dashboard_stats.processing_orders }}</strong></div></a>
+      <a class="card metric-card border-primary shadow-sm" href="{% url 'admin:orders_order_changelist' %}?status__exact=EN_ROUTE"><div class="card-body"><span class="metric-label text-muted">En route</span><strong class="metric-value text-body">{{ admin_dashboard_stats.en_route_orders }}</strong></div></a>
+      <a class="card metric-card border-success shadow-sm" href="{% url 'admin:orders_order_changelist' %}?status__exact=DELIVERED"><div class="card-body"><span class="metric-label text-muted">Delivered</span><strong class="metric-value text-body">{{ admin_dashboard_stats.delivered_orders }}</strong></div></a>
+    </div>
+
+    <h2 class="dashboard-heading">Sales summary</h2>
+    <div class="metric-grid">
+      <a class="card metric-card border-primary shadow-sm" href="{% url 'admin:orders_order_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Order value</span><strong class="metric-value text-body">{{ admin_dashboard_stats.currency }} {{ admin_dashboard_stats.total_sales|floatformat:2 }}</strong><span class="metric-note text-muted">Excludes cancelled orders</span></div></a>
+      <a class="card metric-card border-success shadow-sm" href="{% url 'admin:payments_paymenttransaction_changelist' %}?status__exact=PAID"><div class="card-body"><span class="metric-label text-muted">Paid</span><strong class="metric-value text-body">{{ admin_dashboard_stats.currency }} {{ admin_dashboard_stats.total_paid|floatformat:2 }}</strong><span class="metric-note text-muted">Confirmed transactions</span></div></a>
+      <a class="card metric-card border-warning shadow-sm" href="{% url 'admin:orders_order_changelist' %}"><div class="card-body"><span class="metric-label text-muted">Outstanding</span><strong class="metric-value text-body">{{ admin_dashboard_stats.currency }} {{ admin_dashboard_stats.outstanding|floatformat:2 }}</strong><span class="metric-note text-muted">Order value less paid</span></div></a>
+    </div>
+  {% endif %}
+
+  {% get_side_menu using="app_list" as dashboard_list %}
+  <h2 class="dashboard-heading">Management</h2>
+  <div class="row">
+    {% for app in dashboard_list %}
+      <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+        <div class="card shadow-sm">
+          <div class="card-header"><h3 class="card-title font-weight-bold"><i class="{{ app.icon }} mr-2" aria-hidden="true"></i>{{ app.name }}</h3></div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              {% for model in app.models %}
+                {% if model.url %}<a href="{{ model.url }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"><span><i class="{{ model.icon }} mr-2 text-muted" aria-hidden="true"></i>{{ model.name }}</span><span class="text-muted" aria-hidden="true">&rsaquo;</span></a>{% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

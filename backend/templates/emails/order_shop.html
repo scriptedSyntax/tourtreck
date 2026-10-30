@@ -1,0 +1,13 @@
+{% extends "emails/base.html" %}
+{% block title %}New order #{{ order.reference }}{% endblock %}
+{% block preview %}A new order has been placed.{% endblock %}
+{% block content %}
+<h1 style="margin:0 0 10px;font-size:24px;">New order #{{ order.reference }}</h1>
+<p><strong>{{ order.customer_name }}</strong><br>{{ order.customer_phone }}{% if order.customer_email %}<br>{{ order.customer_email }}{% endif %}</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:18px 0;">
+  {% for item in items %}<tr><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;">{{ item.product_name }} × {{ item.quantity }}</td><td align="right" style="padding:10px 0;border-bottom:1px solid #e5e7eb;">{{ brand.currency }} {{ item.total_price }}</td></tr>{% endfor %}
+  <tr><td style="padding:12px 0;font-weight:700;">Total</td><td align="right" style="padding:12px 0;font-weight:700;color:{{ brand.primary_color }};">{{ brand.currency }} {{ order.total }}</td></tr>
+</table>
+<p><strong>{{ order.get_delivery_method_display }}</strong>{% if order.delivery_location %}<br>{{ order.delivery_location }}{% endif %}{% if order.delivery_map_url %}<br><a href="{{ order.delivery_map_url }}" style="color:{{ brand.primary_color }};">Open map</a>{% endif %}</p>
+<p><a href="{{ brand.backend_url }}/admin/" style="color:{{ brand.primary_color }};">Open store management</a></p>
+{% endblock %}

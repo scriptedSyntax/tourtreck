@@ -1,0 +1,6 @@
+{% autoescape off %}Hello {{ user.full_name }},
+
+Create a password to access your {{ brand.business_name }} orders and customer account.
+Create password: {{ action_url }}
+
+This private link expires in {{ expiry_minutes }} minutes and can only be used once.{% endautoescape %}

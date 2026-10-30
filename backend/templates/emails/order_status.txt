@@ -1,0 +1,7 @@
+{% autoescape off %}Hello {{ order.customer_name }},
+
+Your {{ brand.business_name }} order #{{ order.reference }} is now {{ order.get_status_display }}.
+Total: {{ brand.currency }} {{ order.total }}
+
+{{ access.message }}{% if access.url %}
+{{ access.button }}: {{ access.url }}{% endif %}{% endautoescape %}

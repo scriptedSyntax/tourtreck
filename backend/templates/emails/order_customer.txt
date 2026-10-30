@@ -1,0 +1,21 @@
+{% autoescape off %}Hello {{ order.customer_name }},
+
+Thank you for your order from {{ brand.business_name }}.
+Order: #{{ order.reference }}
+Status: {{ order.get_status_display }}
+Delivery: {{ order.get_delivery_method_display }}{% if order.delivery_location %}
+Location: {{ order.delivery_location }}{% endif %}{% if order.delivery_map_url %}
+Map: {{ order.delivery_map_url }}{% endif %}
+
+{% for item in items %}- {{ item.product_name }} x {{ item.quantity }}: {{ brand.currency }} {{ item.total_price }}
+{% endfor %}
+Subtotal: {{ brand.currency }} {{ order.subtotal }}
+Delivery fee: {{ brand.currency }} {{ order.delivery_fee }}
+Total: {{ brand.currency }} {{ order.total }}
+
+{{ access.message }}{% if access.url %}
+{{ access.button }}: {{ access.url }}{% endif %}
+
+{% if brand.shop_phone %}Phone: {{ brand.shop_phone }}
+{% endif %}{% if brand.shop_email %}Email: {{ brand.shop_email }}
+{% endif %}Keep passwords and private account links secure.{% endautoescape %}

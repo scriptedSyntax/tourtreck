@@ -1,0 +1,16 @@
+{% extends "emails/base.html" %}
+{% block title %}Order #{{ order.reference }}{% endblock %}
+{% block preview %}We received your order #{{ order.reference }}.{% endblock %}
+{% block content %}
+<h1 style="margin:0 0 10px;font-size:24px;color:#172033;">Order received</h1>
+<p style="margin:0 0 20px;">Hello {{ order.customer_name }}, thank you for shopping with us. Your order <strong>#{{ order.reference }}</strong> is {{ order.get_status_display|lower }}.</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin:18px 0;">
+  {% for item in items %}<tr><td style="padding:10px 0;border-bottom:1px solid #e5e7eb;">{{ item.product_name }} × {{ item.quantity }}</td><td align="right" style="padding:10px 0;border-bottom:1px solid #e5e7eb;font-weight:600;">{{ brand.currency }} {{ item.total_price }}</td></tr>{% endfor %}
+  <tr><td style="padding:12px 0 4px;">Subtotal</td><td align="right" style="padding:12px 0 4px;">{{ brand.currency }} {{ order.subtotal }}</td></tr>
+  <tr><td style="padding:4px 0;">Delivery fee</td><td align="right" style="padding:4px 0;">{{ brand.currency }} {{ order.delivery_fee }}</td></tr>
+  <tr><td style="padding:8px 0;font-size:17px;font-weight:700;">Total</td><td align="right" style="padding:8px 0;font-size:17px;font-weight:700;color:{{ brand.primary_color }};">{{ brand.currency }} {{ order.total }}</td></tr>
+</table>
+<p><strong>{{ order.get_delivery_method_display }}</strong>{% if order.delivery_location %}<br>{{ order.delivery_location }}{% endif %}{% if order.delivery_map_url %}<br><a href="{{ order.delivery_map_url }}" style="color:{{ brand.primary_color }};">View delivery location</a>{% endif %}</p>
+<p>{{ access.message }}</p>
+{% if access.url %}<p style="margin:24px 0 4px;"><a href="{{ access.url }}" style="display:inline-block;padding:12px 20px;background:{{ brand.primary_color }};color:#ffffff;text-decoration:none;border-radius:5px;font-weight:700;">{{ access.button }}</a></p>{% endif %}
+{% endblock %}

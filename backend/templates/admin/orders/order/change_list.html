@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+  {% if sales_summary %}
+    <div class="row mb-3">
+      <div class="col-xl-3 col-md-6"><div class="card shadow-sm"><div class="card-body"><span class="text-muted small text-uppercase">Total orders</span><strong class="d-block h5 mt-2 mb-0">{{ sales_summary.total_orders }}</strong></div></div></div>
+      <div class="col-xl-3 col-md-6"><div class="card shadow-sm"><div class="card-body"><span class="text-muted small text-uppercase">Total order value</span><strong class="d-block h5 mt-2 mb-0">{{ sales_summary.total_order_value|floatformat:2 }}</strong></div></div></div>
+      <div class="col-xl-3 col-md-6"><div class="card shadow-sm"><div class="card-body"><span class="text-muted small text-uppercase">Total paid</span><strong class="d-block h5 mt-2 mb-0">{{ sales_summary.total_paid|floatformat:2 }}</strong></div></div></div>
+      <div class="col-xl-3 col-md-6"><div class="card shadow-sm"><div class="card-body"><span class="text-muted small text-uppercase">Outstanding balance</span><strong class="d-block h5 mt-2 mb-0">{{ sales_summary.outstanding_balance|floatformat:2 }}</strong></div></div></div>
+    </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ admin_brand_name }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  :root {
+    --primary: {{ admin_primary_color|default:'#007BFF' }};
+    --secondary: {{ admin_secondary_color|default:'#6C757D' }};
+    --accent: {{ admin_accent_color|default:'#FFC107' }};
+  }
+
+  #jazzy-navbar {
+    background-color: var(--primary) !important;
+  }
+
+  #jazzy-navbar .nav-link,
+  #jazzy-navbar .navbar-brand,
+  #jazzy-navbar .admin-header-actions a,
+  #jazzy-navbar .admin-header-actions button {
+    color: #fff !important;
+  }
+
+  #jazzy-navbar .nav-link:hover,
+  #jazzy-navbar .admin-header-actions a:hover,
+  #jazzy-navbar .admin-header-actions button:hover {
+    background: rgba(255, 255, 255, .14) !important;
+  }
+
+  #jazzy-logo {
+    background-color: var(--secondary) !important;
+    color: #fff !important;
+  }
+
+  .nav-sidebar > .nav-item > .nav-link.active,
+  .nav-sidebar > .nav-item.menu-open > .nav-link,
+  .page-item.active .page-link,
+  .badge-primary {
+    border-color: var(--primary) !important;
+    background-color: var(--primary) !important;
+    color: #fff !important;
+  }
+
+  .btn-primary,
+  input[type="submit"].default {
+    border-color: var(--primary) !important;
+    background-color: var(--primary) !important;
+    color: #fff !important;
+  }
+
+  .btn-secondary {
+    border-color: var(--secondary) !important;
+    background-color: var(--secondary) !important;
+    color: #fff !important;
+  }
+
+  .content-wrapper a:not(.btn):not(.nav-link):not(.dropdown-item),
+  .text-primary,
+  .page-link {
+    color: var(--primary);
+  }
+
+  .card-primary.card-outline,
+  .select2-container--default.select2-container--focus .select2-selection,
+  .form-control:focus {
+    border-color: var(--primary) !important;
+  }
+
+  .form-control:focus,
+  .custom-select:focus {
+    box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--accent) 28%, transparent) !important;
+  }
+
+  #admin-navigation-progress {
+    position: fixed;
+    z-index: 2050;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--primary, #007bff);
+    box-shadow: 0 0 8px var(--primary, #007bff);
+  }
+
+  #admin-navigation-progress.is-loading {
+    width: 82%;
+    opacity: 1;
+    transition: width 6s cubic-bezier(.1, .7, .2, 1), opacity .15s ease;
+  }
+
+  .admin-header-actions {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    margin-right: .35rem;
+  }
+
+  .admin-header-actions a,
+  .admin-header-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-height: 34px;
+    padding: .35rem .65rem;
+    border: 0;
+    border-radius: .25rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .admin-header-actions a:hover,
+  .admin-header-actions button:hover {
+    background: rgba(0, 0, 0, .07);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .admin-header-actions form {
+    margin: 0;
+  }
+
+  @media (max-width: 575.98px) {
+    .admin-header-actions .admin-action-label {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const progress = document.createElement("div");
+    progress.id = "admin-navigation-progress";
+    progress.setAttribute("aria-hidden", "true");
+    document.body.appendChild(progress);
+    let fallbackTimer;
+
+    const accountMenu = document.querySelector("#jazzy-navbar .navbar-nav.ml-auto");
+    const existingLogoutForm = document.querySelector("#logout-form");
+    if (accountMenu && existingLogoutForm) {
+      const headerActions = document.createElement("li");
+      headerActions.className = "nav-item admin-header-actions";
+
+      const passwordLink = document.createElement("a");
+      passwordLink.href = "{% url 'admin:password_change' %}";
+      passwordLink.title = "Change password";
+      passwordLink.innerHTML = '<i class="fas fa-key" aria-hidden="true"></i><span class="admin-action-label">Change password</span>';
+
+      const logoutForm = existingLogoutForm.cloneNode(true);
+      logoutForm.id = "header-logout-form";
+      const logoutButton = logoutForm.querySelector("button");
+      logoutButton.title = "Log out";
+      logoutButton.className = "";
+      logoutButton.innerHTML = '<i class="fas fa-sign-out-alt" aria-hidden="true"></i><span class="admin-action-label">Log out</span>';
+
+      headerActions.append(passwordLink, logoutForm);
+      accountMenu.prepend(headerActions);
+    }
+
+    function startProgress() {
+      window.clearTimeout(fallbackTimer);
+      progress.classList.remove("is-loading");
+      progress.style.width = "0";
+      void progress.offsetWidth;
+      progress.style.width = "";
+      progress.classList.add("is-loading");
+      fallbackTimer = window.setTimeout(stopProgress, 8000);
+    }
+
+    function stopProgress() {
+      window.clearTimeout(fallbackTimer);
+      progress.style.width = "100%";
+      window.setTimeout(function () {
+        progress.classList.remove("is-loading");
+        progress.style.width = "";
+      }, 150);
+    }
+
+    document.addEventListener("click", function (event) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target.closest("a");
+      if (!link || link.target || link.hasAttribute("download") || link.matches("[data-widget], [data-toggle]")) return;
+      const href = link.getAttribute("href");
+      if (!href || href === "#" || href.startsWith("javascript:")) return;
+      const destination = new URL(link.href, window.location.href);
+      if (destination.origin !== window.location.origin) return;
+      if (destination.pathname === window.location.pathname && destination.search === window.location.search && destination.hash) return;
+      startProgress();
+    });
+
+    document.addEventListener("submit", function () {
+      startProgress();
+    });
+    window.addEventListener("pageshow", stopProgress);
+  });
+</script>
+{% endblock %}

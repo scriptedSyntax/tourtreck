@@ -1,0 +1,81 @@
+# Secrets and machine-specific environment files
+.env
+.env.*
+!.env.example
+
+# Local planning notes
+master.txt
+master.t
+
+# Databases and runtime data
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-shm
+*.sqlite3-wal
+*.db
+
+# User-uploaded and generated backend files
+backend/media/
+backend/staticfiles/
+
+# Python environments, caches, and reports
+.venv/
+venv/
+backend/.venv/
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node and Next.js dependencies/build output
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+.turbo/
+frontend/.turbo/
+coverage/
+
+# Logs, temporary files, and archives
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.zip
+*.7z
+*.rar
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local certificates and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Local development databases and backend environments
+backend/db.sqlite3
+backend/.env
+backend/.venv/
+backend/media/
+backend/staticfiles/

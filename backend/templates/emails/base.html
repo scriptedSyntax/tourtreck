@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}{{ brand.business_name }}{% endblock %}</title></head>
+<body style="margin:0;background:#f4f6f8;color:#172033;font-family:Arial,sans-serif;">
+  <div style="display:none;max-height:0;overflow:hidden;">{% block preview %}{% endblock %}</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f6f8;padding:24px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">
+        <tr><td style="height:6px;background:{{ brand.primary_color }};"></td></tr>
+        <tr><td style="padding:26px 30px 18px;text-align:center;">
+          {% if brand.logo_url %}<img src="{{ brand.logo_url }}" alt="{{ brand.business_name }}" style="display:block;max-width:180px;max-height:70px;margin:0 auto 12px;">{% endif %}
+          <div style="font-size:20px;font-weight:700;color:{{ brand.primary_color }};">{{ brand.business_name }}</div>
+        </td></tr>
+        <tr><td style="padding:6px 30px 30px;line-height:1.6;">{% block content %}{% endblock %}</td></tr>
+        <tr><td style="padding:20px 30px;background:#f8fafc;border-top:1px solid #e5e7eb;color:#64748b;font-size:12px;line-height:1.6;text-align:center;">
+          {% if brand.shop_phone %}{{ brand.shop_phone }}{% endif %}{% if brand.shop_email %}{% if brand.shop_phone %} · {% endif %}{{ brand.shop_email }}{% endif %}<br>
+          {% if brand.shop_location %}{{ brand.shop_location }}<br>{% endif %}
+          Keep passwords and private account links secure. {{ brand.business_name }} will never ask for your password.
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

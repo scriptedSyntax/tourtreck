@@ -1,0 +1,219 @@
+# CURRENT SYSTEM STATE
+
+Last updated: July 2026
+
+## Overview
+
+The project is an integrated, reusable single-shop ecommerce system.
+
+One deployment represents one shop. It is not multi-tenant and does not include staff or manager roles.
+
+Technology:
+- Backend: Django 6, Django REST Framework, Simple JWT
+- Frontend: Next.js 16, React 19, Tailwind CSS 4
+- Local database: SQLite
+- Authentication transport: Next.js same-origin server routes with HttpOnly JWT cookies
+
+Roles:
+- SUPER_ADMIN
+- ADMIN
+- CUSTOMER
+
+## Accounts and access
+
+Complete:
+- Custom email-based Django user model
+- Customer registration and login
+- JWT access and refresh tokens
+- Logout and token blacklisting
+- One active API login per user through API-session version rotation
+- Customer profile endpoint and minimal account dashboard
+- Customer order history
+- Customer order confirmation email after checkout
+- New-order notification to the configured shop email
+- Customer email when an order status changes
+- SUPER_ADMIN manages all users
+- ADMIN sees and manages CUSTOMER users only
+- CUSTOMER cannot access Django Admin
+- Authentication responses are non-cacheable
+- Unauthenticated account navigation remains hidden
+
+## Shop and branding
+
+Complete:
+- Dynamic business name, logo, favicon and colors
+- Default SEO title and description
+- Shop phone, WhatsApp, email, location and currency
+- Delivery fee and pickup option
+- Homepage sections with a super-admin-controlled section limit
+- Promotional ad heroes with image and safe destination link
+- Newsletter subscriptions visible in Django Admin
+- Categories and products
+- Up to five inline images per product
+- Permanently embedded branding on uploaded product images
+- Product ratings and verified-purchase reviews
+- Upload size, dimensions, content verification and re-encoding
+
+SUPER_ADMIN controls hidden SiteSetting branding. ADMIN manages ordinary shop operations but cannot see or manage SiteSetting.
+
+## Orders and carts
+
+Complete:
+- Guest local frontend cart
+- Authenticated backend cart foundation
+- Cart and cart-item APIs
+- Guest and customer checkout
+- Pickup and delivery
+- Delivery-location validation
+- Server-controlled product prices
+- Order and order-item snapshots
+- Order statuses: PENDING, PROCESSING, EN_ROUTE, DELIVERED, CANCELLED
+- Django Admin inline items and order status actions
+- Customer order history
+
+Stock availability is validated during cart and checkout. No additional stock workflow is planned in the current scope.
+
+## Payments
+
+Complete:
+- Payment methods
+- Multiple transactions per order
+- PENDING, PAID, FAILED and REFUNDED statuses
+- Paid amount, balance and payment status calculations
+- Payment admin action to mark transactions paid
+- Cash/manual processor foundation
+- Bank, M-Pesa and card processor placeholders
+
+Not yet implemented:
+- Real M-Pesa gateway calls
+- Real card gateway calls
+- Automated bank reconciliation
+
+## Django Admin
+
+Complete:
+- Dynamic admin branding, defaulting to “Admin”
+- User, shop, order, cart and payment management
+- Role-based model visibility
+- Product images and order/cart items inline
+- Search, relevant filters and ordering
+- Homepage-content limits
+- Sales summary based on the filtered order list
+- Total paid and outstanding balances
+- Newsletter and review management
+
+## APIs
+
+Complete endpoint groups:
+- Public shop settings and profile
+- Homepage sections and ad heroes
+- Categories and products
+- Product details and reviews
+- Newsletter subscription
+- Login, refresh, logout, registration and current user
+- Customer order history/detail
+- Cart creation, retrieval and item management
+- Checkout
+- Admin category/product/order/payment management
+- Admin sales summary
+- Super-admin SiteSetting management
+
+Public shop reads allow anonymous access. Customer endpoints require CUSTOMER authentication. Admin APIs require ADMIN or SUPER_ADMIN. Branding writes require SUPER_ADMIN.
+
+## Frontend integration
+
+Complete:
+- Dynamic header logo and business name
+- Dynamic footer, contact details and branding
+- Homepage products, homepage content and ad hero
+- Product listing and product details
+- Product image fallbacks
+- Cart and checkout pages
+- Checkout profile autofill for signed-in customers
+- Login and signup with repeated-password validation
+- Minimal account dashboard
+- Newsletter form
+- Dynamic ratings and verified-purchase review section
+- Local media development handling
+- Friendly customer-facing loading and error messages
+- ScriptedSyntax improvement/integration credit
+
+## Security state
+
+Complete:
+- Secure HttpOnly host-only authentication cookies
+- Production __Host- cookie names
+- Single-session token-version enforcement
+- Centralized frontend authentication state
+- Exact Origin checks and double-submit CSRF protection for sensitive mutations
+- JSON content-type and body-size enforcement
+- Safe public error contract with request IDs
+- Raw backend responses and technical errors hidden from visitors
+- Database-backed operation/account/cart throttling
+- Production configuration system checks
+- Environment-controlled CORS and CSRF origins
+- CSP, HSTS support, frame denial, nosniff, referrer and permissions headers
+- Production browser source maps disabled
+- Private-IP image optimization remains disabled
+- Restricted production image origins
+- Safe promotional link validation
+- Verified delivered-purchase review requirement
+- Persistent application_cache table created locally
+
+## Environment and documentation
+
+Available:
+- backend/.env.example
+- frontend/.env.example
+- backend/docs/API_ENDPOINTS.md
+- backend/docs/FRONTEND_RUN.md
+- DEVELOPMENT_AND_PRODUCTION.md in the repository root
+- master.txt as the original product vision
+- state.txt as the current implementation status
+
+Email configuration:
+- Local development uses the console email backend and prints messages in the backend terminal.
+- SMTP environment fields are ready for production.
+- Real production sending requires credentials from the selected email provider.
+
+## Local run commands
+
+Backend:
+cd backend
+.\.venv\Scripts\Activate.ps1
+python manage.py migrate
+python manage.py createcachetable
+python manage.py runserver
+
+Frontend, in another terminal:
+cd frontend
+npm ci
+npm run dev
+
+URLs:
+- Storefront: http://localhost:3000
+- Backend: http://127.0.0.1:8000
+- Django Admin: http://127.0.0.1:8000/admin/
+
+## Latest verification
+
+Passed:
+- Django system check
+- No uncreated model migrations
+- No pending migrations reported
+- Database cache table exists
+- Direct ESLint validation
+- Next.js production build
+- Visitor-facing technical wording scan
+- Order email notification test produced the expected customer confirmation, shop alert and customer status update
+
+Known non-blocking warning:
+- baseline-browser-mapping development data is outdated; this does not prevent the Next.js build.
+
+Production HSTS subdomain/preload flags intentionally remain disabled until every production subdomain is confirmed HTTPS-only.
+
+## Remaining future work
+
+- Implement and audit the real payment gateways when their providers and credentials are ready.
+
+The backend, admin, API, storefront and order-email flows are functional. Payment-gateway integration is the only intentionally deferred application feature.

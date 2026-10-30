@@ -1,0 +1,13 @@
+{% autoescape off %}A new order has been placed.
+
+Order: #{{ order.reference }}
+Customer: {{ order.customer_name }}
+Phone: {{ order.customer_phone }}
+Email: {{ order.customer_email }}
+Delivery: {{ order.get_delivery_method_display }}{% if order.delivery_location %}
+Location: {{ order.delivery_location }}{% endif %}{% if order.delivery_map_url %}
+Map: {{ order.delivery_map_url }}{% endif %}
+
+{% for item in items %}- {{ item.product_name }} x {{ item.quantity }}: {{ brand.currency }} {{ item.total_price }}
+{% endfor %}
+Total: {{ brand.currency }} {{ order.total }}{% endautoescape %}
